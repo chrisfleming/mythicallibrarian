@@ -838,7 +838,14 @@
  
  #Create MV/EP/SH Identification Type from ProgramID
 	mythicalLibrarianProgramIDCheck=${ProgramID:0:2}
- 
+	
+	if [ "$ShowCategory" = "Movie" ] || [ "$ShowCategory" = "Film" ]; then
+		mythicalLibrarianProgramIDCheck="MV"
+	fi
+
+
+
+
  #Extrapolate data from Programid
 	test "$mythicalLibrarianProgramIDCheck" = "SH" && ProgramIDType="Generic Episode With No Data"
 	test "$mythicalLibrarianProgramIDCheck" = "MV" && ProgramIDType="Movie"
@@ -893,6 +900,11 @@
  #Create MV/EP/SH Identification Type from ProgramID
 	mythicalLibrarianProgramIDCheck=${ProgramID:0:2}
  
+ 	if [ "$ShowCategory" = "Movie" ] || [ "$ShowCategory" = "Film" ]; then
+		mythicalLibrarianProgramIDCheck="MV"
+	fi
+
+
  #Spoof show as episode to avoid programid
  	test "$mythicalLibrarianProgramIDCheck" = "EP" && ProgramIDType="Generic Episode With No Data" && mythicalLibrarianProgramIDCheck="SH"
  #Extrapolate data from Programid
