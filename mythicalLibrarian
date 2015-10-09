@@ -841,9 +841,7 @@
 	
 	if [ "$ShowCategory" = "Movie" ] || [ "$ShowCategory" = "Film" ]; then
 		mythicalLibrarianProgramIDCheck="MV"
-	fi
-
-
+	fi 
 
 
  #Extrapolate data from Programid
@@ -870,6 +868,10 @@
  	seasonyear=`echo "${ShowStartTime:0:4}"`
 
  #predefined naming conventions
+     if [ "$ShowCategory" = "news" ]; then
+     	 ShowCategory="News"
+	 fi
+
 	 if [ "$ShowCategory" = "Sports event" -o "$ShowCategory" = "News" -o "$ShowCategory" = "Newsmagazine" ]; then
 	 	NamingConvention=$ShowCategory
  	 fi
@@ -884,6 +886,7 @@
  ####NoLookup is an alternate mode where TheTvDb is not used for lookups
  ProcessNoLookup () {
  
+
  #Check for database permissions
  	test "$ChanID" = "" && echo "%%%NO DATABASE INFORMATION. CHECK LOGIN/PASS OR FILE %%%%%">>$mythicalLibrarian/output.log
 
@@ -2791,6 +2794,8 @@ Do not run this command with sudo."
  	echo "JOB: mythicalLibrarian '$InputPath' '$InputTitle' '$InputSubtitle'"
  	echo "LISTING INTERNAL VARIABLES USED BY mythicalLibrarian.">>"$mythicalLibrarian"/output.log
  	echo "INTERNET TIMEOUT:$Timeout- TVDB API KEY:$APIkey- mythicalLibrarian WORKING DIR:$mythicalLibrarian-">>"$mythicalLibrarian"/output.log
+ 	echo "PROGRAMIDCheck:$mythicalLibrarianProgramIDCheck  ProgramUD:$ProgramID">>"$mythicalLibrarian"/output.log
+ 	echo "NamingConvention:$NamingConvention">>"$mythicalLibrarian"/output.log
  	echo "MOVE DIR:$MoveDir-">>"$mythicalLibrarian"/output.log    
  	echo "FAILSAFE MODE:$FailSafeMode- FAILSAFE DIR:$FailSafeDir- ALTERNATE MOVE DIR:$AlternateMoveDir-">>"$mythicalLibrarian"/output.log
  	echo "USE ORIGINAL DIR:$TargetPathIsInputPath NOTIFICATIONS:$Notify">>"$mythicalLibrarian"/output.log
@@ -2871,6 +2876,10 @@ Do not run this command with sudo."
  
  #####MAKE THE FOLDER#####
  MakeFolder
+
+ echo $ShowFileName
+ ShowFileName=`echo $ShowFileName| tr -d '!|\?*<":>+[]/'"'"`
+ echo $ShowFileName
  
  #check to see if output folder exists
  test -d "$MoveDir" && echo "TARGET SET:$MoveDir/$ShowFileName.$OriginalExt"||echo "ERROR: COULD NOT CREATE FOLDER:$MoveDir/$ShowFileName" 
@@ -2917,9 +2926,7 @@ Do not run this command with sudo."
  #If the show is generic programming, this is the best mythicalLibrarian can do. 
  test  "$mythicalLibrarianProgramIDCheck" = "SH" && DisplayShowWarning
 
-
-
- 
+ #ShowFileName=$(printf '%q' "$ShowFileName")
  
  #####MOVE MODE HANDLING#####
  #If symlink is not in LINK mode, Move and rename the file.
@@ -2928,7 +2935,9 @@ Do not run this command with sudo."
  #Send notifications, Move the file and rename
  	echo "MOVING FILE: '$InputPath' to '$MoveDir/$ShowFileName.$OriginalExt'">>"$mythicalLibrarian"/output.log
  	test "$Notify" = "Enabled" && sudo -u "$NotifyUserName" /usr/local/bin/librarian-notify-send "mythicalLibrarian Moving" "Moving and renaming $ShowFileName" drive-harddisk
+ 	echo "mv \"$InputPath\" \"$MoveDir/$ShowFileName.$OriginalExt\""
  	mv "$InputPath" "$MoveDir/$ShowFileName.$OriginalExt"
+ 	echo "mv \"$InputPath\" \"$MoveDir\/$ShowFileName.$OriginalExt\""
  
  #Check and report if file was moved
  	if [ -e "$MoveDir/$ShowFileName.$OriginalExt" ]; then
